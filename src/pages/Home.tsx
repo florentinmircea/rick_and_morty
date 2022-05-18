@@ -1,42 +1,24 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
 import { filterCharacters, getCharacters } from "../commands/characters";
-import styled from "styled-components";
-import img from "../assets/images/homepage-bg.jpg";
 import Card from "../components/Card";
 import { CharacterInfo } from "../types";
-import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
-
-const Root = styled.div`
-  background-image: url(${img});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-`;
-const RootContent = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  position: relative;
-`;
-
-const CardContainer = styled.div`
-  margin: 15px;
-  flex: 0 1 calc(20% - 30px);
-`;
-
-const CenteredContent = styled.div`
-  display: flex;
-  justify-content: center;
-`;
+import {
+  CardContainer,
+  CenteredContent,
+  RootContent,
+  Root,
+} from "../styles/Home.styles";
 
 const HomePage: React.FunctionComponent = () => {
   const [characters, setCharacters] = useState<CharacterInfo[]>([]);
   const [page, setPage] = useState<number>(1);
   const [maxPage, setMaxPage] = useState<number>(-1);
-  const [value, setValue] = useState<string>("alive");
+  const [value, setValue] = useState("alive");
   const [name, setName] = useState<string>("");
   const options = [{ value: "alive" }, { value: "dead" }, { value: "unknown" }];
   const navigate = useNavigate();
+  const id = useId();
 
   const handlePrevPage = () => {
     if (page > 1) {
@@ -56,7 +38,6 @@ const HomePage: React.FunctionComponent = () => {
   };
 
   useEffect(() => {
-    loadCharacters(1);
     sessionStorage.removeItem("item");
   }, []);
 
@@ -67,14 +48,14 @@ const HomePage: React.FunctionComponent = () => {
   const loadCharacters = async (page: number) => {
     try {
       const response = await getCharacters(page);
-      console.log(response);
+      // console.log(response);
       setMaxPage(response.info.pages);
       setCharacters(response.results);
     } catch (err) {
       if (err instanceof Error) {
-        console.log(err.message);
+        alert(err.message);
       } else {
-        console.log("Unexpected error", err);
+        alert("Unexpected error" + err);
       }
     }
   };
@@ -87,14 +68,14 @@ const HomePage: React.FunctionComponent = () => {
   const filter = async (name: string, status: string) => {
     try {
       const response = await filterCharacters(name, status);
-      console.log(response);
+      // console.log(response);
       setMaxPage(response.info.pages);
       setCharacters(response.results);
     } catch (err) {
       if (err instanceof Error) {
-        console.log(err.message);
+        alert(err.message);
       } else {
-        console.log("Unexpected error", err);
+        alert("Unexpected error" + err);
       }
     }
   };
@@ -109,6 +90,14 @@ const HomePage: React.FunctionComponent = () => {
     setPage(1);
   };
 
+  const debounce = (fn: Function, ms = 300) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn.apply(this, args), ms);
+    };
+  };
+
   const debouncedEventHandler = useMemo(() => debounce(eventHandler, 300), []);
 
   return (
@@ -121,7 +110,7 @@ const HomePage: React.FunctionComponent = () => {
         />
         <select value={value} onChange={handleChange}>
           {options.map((option, index) => (
-            <option key={index} value={option.value}>
+            <option key={`${id}-${index}`} value={option.value}>
               {option.value}
             </option>
           ))}
@@ -131,8 +120,8 @@ const HomePage: React.FunctionComponent = () => {
         {characters.map((item, index) => {
           return (
             <CardContainer
-              key={index}
-              onClick={handleCardClick.bind(this, item)}
+              key={`${id}-${index}`}
+              onClick={() => handleCardClick(item)}
             >
               <Card object={item} />
             </CardContainer>

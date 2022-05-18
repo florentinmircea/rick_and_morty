@@ -1,27 +1,12 @@
 import React from "react";
-import styled from "styled-components";
 import { CharacterInfo } from "../types";
+import { Root, Status, Title } from "../styles/Card.styles";
 
 interface Props {
   object: CharacterInfo;
 }
 
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-color: white;
-  border-style: solid;
-  align-items: center;
-`;
-const Title = styled.h4`
-  color: white;
-`;
-const Status = styled.h5`
-  color: white;
-`;
-
-const Card: React.FunctionComponent<Props> = (props) => {
-  const { object } = props;
+const Card: React.FunctionComponent<Props> = ({ object }: Props) => {
   return (
     <Root>
       <div>

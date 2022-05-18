@@ -1,53 +1,12 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import img from "../assets/images/detailspage-pg.jpg";
+import React, { useEffect, useId, useState } from "react";
 import { getEpisodes } from "../commands/episodes";
+import { Content, Gender, Root, RootContent } from "../styles/Details.styles";
 import { CharacterInfo } from "../types";
-
-const Root = styled.div`
-  background-image: url(${img});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-`;
-
-const RootContent = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  position: relative;
-  justify-content: center;
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-content: center;
-  color: white;
-  flex-direction: column;
-`;
-
-const Male = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  background: blue;
-  width: 60px;
-  height: 60px;
-`;
-
-const Female = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  background: red;
-  width: 60px;
-  height: 60px;
-`;
 
 const DetailsPage: React.FunctionComponent = () => {
   const [item, setItem] = useState<CharacterInfo>();
   const [episodes, setEpisodes] = useState<string[]>([]);
+  const id = useId();
 
   useEffect(() => {
     let aux = JSON.parse(sessionStorage.getItem("item") || "{}");
@@ -68,7 +27,7 @@ const DetailsPage: React.FunctionComponent = () => {
   const loadEpisodesName = async (episodes: number[]) => {
     try {
       const response = await getEpisodes(episodes);
-      console.log(response);
+      // console.log(response);
       if (response) {
         let aux = [];
         for (let i = 0; i < response.length; i++) {
@@ -78,9 +37,9 @@ const DetailsPage: React.FunctionComponent = () => {
       }
     } catch (err) {
       if (err instanceof Error) {
-        console.log(err.message);
+        alert(err.message);
       } else {
-        console.log("Unexpected error", err);
+        alert("Unexpected error" + err);
       }
     }
   };
@@ -95,20 +54,20 @@ const DetailsPage: React.FunctionComponent = () => {
           <div>{item?.species}</div>
 
           {item?.gender === "Male" ? (
-            <Male> {item?.gender}</Male>
+            <Gender male> {item?.gender}</Gender>
           ) : (
-            <Female> {item?.gender}</Female>
+            <Gender> {item?.gender}</Gender>
           )}
           <div>{item?.origin.name}</div>
           <div>{item?.location.name}</div>
           <ol>
             {episodes.map((item, index) => {
-              return <li key={index}>{item}</li>;
+              return <li key={`${id}-${index}`}>{item}</li>;
             })}
           </ol>
           <ul>
             {episodes.map((item, index) => {
-              return <li key={index}>{item}</li>;
+              return <li key={`${id}-${index}`}>{item}</li>;
             })}
           </ul>
         </Content>

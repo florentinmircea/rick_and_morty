@@ -1,10 +1,11 @@
 import axios from "axios";
+import { BASE_URL } from "./characters";
 
-const GET_EPISODE = "https://rickandmortyapi.com/api/episode/";
+const GET_EPISODE = "episode/";
 
 export const getEpisodes = async (episode: number[]) => {
   return axios
-    .get(GET_EPISODE + episode.join(","))
+    .get(BASE_URL + GET_EPISODE + episode.join(","))
     .then((res) => {
       return res.data;
     })

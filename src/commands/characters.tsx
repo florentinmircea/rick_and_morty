@@ -1,13 +1,16 @@
 import axios from "axios";
 
-const GET_CHARACTERS = "https://rickandmortyapi.com/api/character";
+export const BASE_URL = "https://rickandmortyapi.com/api/";
+const GET_CHARACTERS = "character";
 const FILTER_CHARACTERS = (name: string, status: string) =>
-  `https://rickandmortyapi.com/api/character/?name=${name}&status=${status}`;
+  `character/?name=${name}&status=${status}`;
 
 export const getCharacters = async (page: number) => {
   return axios
     .get(
-      page > 1 ? GET_CHARACTERS + "?page=" + page.toString() : GET_CHARACTERS
+      page > 1
+        ? BASE_URL + GET_CHARACTERS + "?page=" + page.toString()
+        : BASE_URL + GET_CHARACTERS
     )
     .then((res) => {
       return res.data;
@@ -19,7 +22,7 @@ export const getCharacters = async (page: number) => {
 
 export const filterCharacters = async (name: string, status: string) => {
   return axios
-    .get(FILTER_CHARACTERS(name, status))
+    .get(BASE_URL + FILTER_CHARACTERS(name, status))
     .then((res) => {
       return res.data;
     })
